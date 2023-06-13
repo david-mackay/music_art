@@ -35,11 +35,15 @@ jobs:
             });
             return files.map(f => f.filename);
 
+      - name: Install jq
+        run: sudo apt-get install jq
+
       - name: Run Script on Each File and Save Outputs
         run: |
-          mkdir outputs
-          for file in ${{ fromJson(steps.files.outputs.result) }}; do
-            gpt_review -a ./api_key.txt -f $file > outputs/$file.txt
+          mkdir -p outputs
+          files=$(echo '${{ steps.files.outputs.result }}' | jq -r '.[]')
+          for file in $files; do
+            gpt_review -a ./api_key.txt -f $file > "outputs/$(basename $file).txt"
           done
 
       - name: Comment on Each File
