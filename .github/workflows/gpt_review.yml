@@ -17,7 +17,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install Package
-        run: pip install ./ai_code_review
+        run: pip install openai ./ai_code_review
 
       - name: Write API Key to File
         run: echo "${{ secrets.API_KEY }}" > api_key.txt
