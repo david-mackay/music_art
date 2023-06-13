@@ -1,0 +1,63 @@
+name: PR Commenter
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install Package
+        run: pip install ./ai_code_review
+
+      - name: Write API Key to File
+        run: echo "${{ secrets.API_KEY }}" > api_key.txt
+
+      - name: Get list of files
+        id: files
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const pull_number = context.issue.number;
+            const { data: files } = await github.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pull_number
+            });
+            return files.map(f => f.filename);
+
+      - name: Run Script on Each File and Save Outputs
+        run: |
+          mkdir outputs
+          for file in ${{ fromJson(steps.files.outputs.result) }}; do
+            gpt_review -a ./api_key.txt -f $file > outputs/$file.txt
+          done
+
+      - name: Comment on Each File
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const issue_number = context.issue.number;
+            const files = ${{ fromJson(steps.files.outputs.result) }};
+            for (let i = 0; i < files.length; i++) {
+              const file = files[i];
+              const output = fs.readFileSync(`outputs/${file}.txt`, 'utf8');
+              await github.pulls.createReviewComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: issue_number,
+                commit_id: context.sha,
+                path: file,
+                position: 1, // Update this to the actual line number where you want to post the comment
+                body: output
+              });
+            }
