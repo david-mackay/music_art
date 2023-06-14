@@ -57,19 +57,3 @@ jobs:
         with:
           script: |
             const pull_number = context.issue.number;
-            const outputs = ${{ fromJson(steps.outputs.result) }};
-            return files.map(f => f.filename);
-      - name: Comment on Each File
-        uses: actions/github-script@v6
-        with:
-          run: |
-            echo ${{ fromJson(steps.outputs.result) }}
-          script: |
-            const issue_number = context.issue.number;
-            const outputs = ${{ fromJson(steps.outputs.result) }};
-            github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: '👋 Thanks for reporting!'
-            });
