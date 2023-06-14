@@ -43,11 +43,11 @@ jobs:
           echo $files
           outputs=""
           for file in $files; do
-            output=$(gpt_review -a ./api_key.txt -f $file)
+            output= "TEST"
             outputs="${outputs}{\"path\":\"${file}\",\"review\":\"${output}\"},"
           done
           outputs="[$(echo -n $outputs | head -c -1)]"
-          echo $outputs > outputs.json
+          echo "::set-output name=result::$outputs"
         env:
           PYTHONIOENCODING: utf-8
           
@@ -57,5 +57,5 @@ jobs:
         with:
           script: |
             const issue_number = context.issue.number;
-            const outputs = JSON.parse(await require('fs').promises.readFile('outputs.json', 'utf8'));
+            const outputs = ${{ fromJson(steps.outputs.outputs) }};
             echo $outputs
