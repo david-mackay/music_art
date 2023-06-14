@@ -50,7 +50,7 @@ jobs:
           PYTHONIOENCODING: utf-8
 
       - name: Comment on Each File
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           script: |
             const issue_number = context.issue.number;
@@ -59,13 +59,13 @@ jobs:
               const fileOutput = outputs[i];
               const file = fileOutput.file;
               const output = fileOutput.output;
-              await github.pulls.createReviewComment({
+              await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                pull_number: issue_number,
+                issue_number: issue_number,
                 commit_id: context.sha,
                 path: file,
-                position: 1, // Update this to the actual line number where you want to post the comment
+                position: 1,
                 body: output
               });
             }
