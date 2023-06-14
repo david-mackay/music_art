@@ -39,13 +39,15 @@ jobs:
         id: outputs
         run: |
           files=$(echo '${{ steps.files.outputs.result }}' | jq -r '.[]')
+          echo "these are the files"
+          echo $files
           outputs=""
           for file in $files; do
             output=$(gpt_review -a ./api_key.txt -f $file)
             outputs="${outputs}{\"file\":\"${file}\",\"output\":\"${output}\"},"
           done
           outputs="[$(echo -n $outputs | head -c -1)]"
-          echo "::set-output name=result::$outputs"
+          echo $outputs
         env:
           PYTHONIOENCODING: utf-8
 
