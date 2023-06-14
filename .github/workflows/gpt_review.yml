@@ -35,26 +35,30 @@ jobs:
             });
             return files.map(f => f.filename);
 
-      - name: Install jq
-        run: sudo apt-get install jq
-
       - name: Run Script on Each File and Save Outputs
+        id: outputs
         run: |
-          mkdir -p outputs
           files=$(echo '${{ steps.files.outputs.result }}' | jq -r '.[]')
+          outputs=""
           for file in $files; do
-            gpt_review -a ./api_key.txt -f $file > "outputs/$(basename $file).txt"
+            output=$(gpt_review -a ./api_key.txt -f $file)
+            outputs="${outputs}{\"file\":\"${file}\",\"output\":\"${output}\"},"
           done
+          outputs="[$(echo -n $outputs | head -c -1)]"
+          echo "::set-output name=result::$outputs"
+        env:
+          PYTHONIOENCODING: utf-8
 
       - name: Comment on Each File
         uses: actions/github-script@v5
         with:
           script: |
             const issue_number = context.issue.number;
-            const files = ${{ fromJson(steps.files.outputs.result) }};
-            for (let i = 0; i < files.length; i++) {
-              const file = files[i];
-              const output = fs.readFileSync(`outputs/${file}.txt`, 'utf8');
+            const outputs = ${{ fromJson(steps.outputs.outputs.result) }};
+            for (let i = 0; i < outputs.length; i++) {
+              const fileOutput = outputs[i];
+              const file = fileOutput.file;
+              const output = fileOutput.output;
               await github.pulls.createReviewComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
