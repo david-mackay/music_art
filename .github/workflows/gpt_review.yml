@@ -43,7 +43,7 @@ jobs:
           echo $files
           outputs=""
           for file in $files; do
-            output= "TEST"
+            output="TEST"
             outputs="${outputs}{\"path\":\"${file}\",\"review\":\"${output}\"},"
           done
           outputs="[$(echo -n $outputs | head -c -1)]"
