@@ -44,10 +44,10 @@ jobs:
           outputs=""
           for file in $files; do
             output=$(gpt_review -a ./api_key.txt -f $file)
-            outputs="${outputs}{\"file\":\"${file}\",\"output\":\"${output}\"},"
+            outputs="${outputs}{\"path\":\"${file}\",\"review\":\"${output}\"},"
           done
           outputs="[$(echo -n $outputs | head -c -1)]"
-          echo $outputs
+          echo $outputs > outputs.json
         env:
           PYTHONIOENCODING: utf-8
           
@@ -56,4 +56,6 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const pull_number = context.issue.number;
+            const issue_number = context.issue.number;
+            const outputs = JSON.parse(await require('fs').promises.readFile('outputs.json', 'utf8'));
+            echo $outputs
