@@ -50,7 +50,15 @@ jobs:
           echo $outputs
         env:
           PYTHONIOENCODING: utf-8
-
+          
+      - name: Comment On Each File
+        id: comments
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const pull_number = context.issue.number;
+            const outputs = ${{ fromJson(steps.outputs.result) }};
+            return files.map(f => f.filename);
       - name: Comment on Each File
         uses: actions/github-script@v6
         with:
@@ -59,14 +67,9 @@ jobs:
           script: |
             const issue_number = context.issue.number;
             const outputs = ${{ fromJson(steps.outputs.result) }};
-            for (let i = 0; i < outputs.length; i++) {
-              const fileOutput = outputs[i];
-              const file = fileOutput.file;
-              const output = fileOutput.output;
               github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: '👋 Thanks for reporting!'
             });
-            }
