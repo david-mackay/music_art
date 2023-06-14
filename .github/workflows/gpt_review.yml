@@ -54,6 +54,8 @@ jobs:
       - name: Comment on Each File
         uses: actions/github-script@v6
         with:
+          run: |
+            echo ${{ fromJson(steps.outputs.result) }}
           script: |
             const issue_number = context.issue.number;
             const outputs = ${{ fromJson(steps.outputs.result) }};
