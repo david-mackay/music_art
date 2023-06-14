@@ -54,7 +54,7 @@ jobs:
         with:
           script: |
             const issue_number = context.issue.number;
-            const outputs = ${{ fromJson(steps.outputs.outputs.result) }};
+            const outputs = ${{ fromJson(steps.outputs.result) }};
             for (let i = 0; i < outputs.length; i++) {
               const fileOutput = outputs[i];
               const file = fileOutput.file;
