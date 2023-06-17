@@ -36,7 +36,7 @@ jobs:
             return files.map(f => f.filename);
 
       - name: Run Script on Each File and Save Outputs
-        id: outputs
+        id: output
         run: |
           files=$(echo '${{ steps.files.outputs.result }}' | jq -r '.[]')
           echo "these are the files"
@@ -57,6 +57,7 @@ jobs:
         with:
           script: |
             const issue_number = context.issue.number;
-            echo ${steps.outputs.outputs.result};
+            echo "echoing";
+            echo "${steps.output.outputs.result}";
             
 
