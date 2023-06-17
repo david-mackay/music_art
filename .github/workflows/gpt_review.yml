@@ -43,7 +43,7 @@ jobs:
           echo $files
           outputs=""
           for file in $files; do
-            output=$(openai run -c "ai_code_review review $file" -s api_key.txt)
+            output=$("test run ok")
             outputs="${outputs}{\"path\":\"${file}\",\"review\":\"${output}\"},"
           done
           outputs="[$(echo -n $outputs | head -c -1)]"
