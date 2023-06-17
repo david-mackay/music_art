@@ -57,6 +57,6 @@ jobs:
         with:
           script: |
             const issue_number = context.issue.number;
-            echo ${steps.outputs.outputs};
-            const outputs = ${fromJson(steps.outputs.outputs)};
+            echo ${steps.outputs.outputs.result};
+            
 
