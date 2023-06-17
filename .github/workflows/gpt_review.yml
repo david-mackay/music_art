@@ -47,6 +47,7 @@ jobs:
             outputs="${outputs}{\"path\":\"${file}\",\"review\":\"${output}\"},"
           done
           outputs="[$(echo -n $outputs | head -c -1)]"
+          echo "${outputs}"
           echo "::set-output name=result::$outputs"
         env:
           PYTHONIOENCODING: utf-8
@@ -58,6 +59,5 @@ jobs:
           script: |
             const issue_number = context.issue.number;
             echo "echoing";
-            echo "${steps.output.outputs.result}";
             
 
