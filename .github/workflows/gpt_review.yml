@@ -59,11 +59,4 @@ jobs:
             const issue_number = context.issue.number;
             echo ${steps.outputs.outputs};
             const outputs = ${fromJson(steps.outputs.outputs)};
-            for output in $outputs; do
-              github.rest.issues.comments.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issue_number,
-                comment: output.review
-              });
-            done
+
