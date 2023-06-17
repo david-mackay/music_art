@@ -43,7 +43,7 @@ jobs:
           echo $files
           outputs=""
           for file in $files; do
-            output="TEST"
+            output=$(openai run -c "ai_code_review review $file" -s api_key.txt)
             outputs="${outputs}{\"path\":\"${file}\",\"review\":\"${output}\"},"
           done
           outputs="[$(echo -n $outputs | head -c -1)]"
@@ -58,4 +58,11 @@ jobs:
           script: |
             const issue_number = context.issue.number;
             const outputs = ${{ fromJson(steps.outputs.outputs) }};
-            echo $outputs
+            for output in $outputs; do
+              github.rest.issues.comments.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue_number,
+                comment: output.review
+              });
+            done
